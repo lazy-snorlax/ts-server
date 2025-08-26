@@ -4,21 +4,25 @@ import { respondWithJSON } from "./json.js";
 import { createUser } from "../db/queries/users.js";
 
 export async function handlerCreateUsers(req: Request, res: Response) {
-    type parameters = { email: string };
+    type parameters = { 
+        email: string 
+    };
     const params: parameters = req.body;
+
     if (!params.email) {
-        throw new BadRequestError("No email detected in request body")
+        throw new BadRequestError("Missing required fields")
     }
 
-    const response = await createUser({ email: params.email })
-    if (!response) {
-        throw new Error("Nothing returned from createUsers")
+    const user = await createUser({ email: params.email })
+
+    if (!user) {
+        throw new Error("Could not create user")
     }
 
     respondWithJSON(res, 201, {
-        id: response.id,
-        email: response.email,
-        createdAt: response.createdAt,
-        updatedAt: response.updatedAt,
+        id: user.id,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
     })
 }
