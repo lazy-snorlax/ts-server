@@ -21,11 +21,12 @@ export async function handlerFileServerHits(_: Request, res: Response) {
 }
 
 export async function handlerResetFileServerHits(_: Request, res: Response) {
-  if (config.platform == "dev") {
-    await deleteUsers();
-    config.api.fileServerHits = 0;
-    res.end();
-  } else {
-    throw new ForbiddenError("You are unauthorized")
+  if (config.platform !== "dev") {
+    console.log(config.platform);
+    throw new ForbiddenError("Reset is only allowed in dev environment.");
   }
+  config.api.fileServerHits = 0;
+  await deleteUsers();
+  res.write("Hits reset to 0");
+  res.end();
 }
